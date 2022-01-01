@@ -47,7 +47,7 @@ type Command struct {
 	// Commands lists the available commands and help topics.
 	// The order here is the order in which they are printed by 'go help'.
 	// Note that subcommands are in general best avoided.
-	Commands []*Command
+	Commands []*Command // RootCommand holds all Commands that could be run.
 }
 
 // LongName returns the command's long name: all the words in the usage line between first word (e.g. "v2ray") and a flag or argument,

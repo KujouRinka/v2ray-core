@@ -145,6 +145,7 @@ func (c *RouterConfig) Build() (*router.Config, error) {
 		}
 	}
 
+	// handle router rule
 	for _, rawRule := range rawRuleList {
 		rule, err := rule2.ParseRule(c.cfgctx, rawRule)
 		if err != nil {
@@ -157,6 +158,8 @@ func (c *RouterConfig) Build() (*router.Config, error) {
 
 		config.Rule = append(config.Rule, rule)
 	}
+
+	// handle router balancers
 	for _, rawBalancer := range c.Balancers {
 		balancer, err := rawBalancer.Build()
 		if err != nil {

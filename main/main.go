@@ -8,7 +8,8 @@ import (
 
 func main() {
 	base.RootCommand.Long = "A unified platform for anti-censorship."
-	base.RegisterCommand(commands.CmdRun)
+	// register some Commands to RootCommand
+	base.RegisterCommand(commands.CmdRun) // this is important
 	base.RegisterCommand(commands.CmdVersion)
 	base.RegisterCommand(commands.CmdTest)
 	base.SortLessFunc = runIsTheFirst

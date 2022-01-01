@@ -42,6 +42,7 @@ func findOffset(b []byte, o int) *offset {
 // syntax error could be detected.
 func DecodeJSONConfig(reader io.Reader) (*v4.Config, error) {
 	jsonConfig := &v4.Config{}
+	// decode config from user's config file to jsonConfig struct
 	err := DecodeJSON(reader, jsonConfig)
 	if err != nil {
 		return nil, err

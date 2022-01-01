@@ -5,7 +5,7 @@ var RootCommand *Command
 
 func init() {
 	RootCommand = &Command{
-		UsageLine: CommandEnv.Exec,
+		UsageLine: CommandEnv.Exec, // register v2ray binary name to RootCommand.
 		Long:      "The root command",
 	}
 }

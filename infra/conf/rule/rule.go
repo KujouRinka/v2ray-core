@@ -201,7 +201,9 @@ func toCidrList(ctx context.Context, ips cfgcommon.StringList) ([]*routercommon.
 	return geoipList, nil
 }
 
+// msg represent raw rule data.
 func parseFieldRule(ctx context.Context, msg json.RawMessage) (*router.RoutingRule, error) {
+	// this struct represents one element of array "rule": []
 	type RawFieldRule struct {
 		RouterRule
 		Domain     *cfgcommon.StringList  `json:"domain"`
@@ -240,6 +242,8 @@ func parseFieldRule(ctx context.Context, msg json.RawMessage) (*router.RoutingRu
 		rule.DomainMatcher = rawFieldRule.DomainMatcher
 	}
 
+	// handle domain rule.
+	// this has same effects as "domains".
 	if rawFieldRule.Domain != nil {
 		for _, domain := range *rawFieldRule.Domain {
 			rules, err := parseDomainRule(ctx, domain)
@@ -250,6 +254,7 @@ func parseFieldRule(ctx context.Context, msg json.RawMessage) (*router.RoutingRu
 		}
 	}
 
+	// handle domains rule
 	if rawFieldRule.Domains != nil {
 		for _, domain := range *rawFieldRule.Domains {
 			rules, err := parseDomainRule(ctx, domain)
@@ -313,12 +318,16 @@ func parseFieldRule(ctx context.Context, msg json.RawMessage) (*router.RoutingRu
 	return rule, nil
 }
 
+// ParseRule parses one routing rule.
+// mag represents raw message of one group of rule.
 func ParseRule(ctx context.Context, msg json.RawMessage) (*router.RoutingRule, error) {
 	rawRule := new(RouterRule)
 	err := json.Unmarshal(msg, rawRule)
 	if err != nil {
 		return nil, newError("invalid router rule").Base(err)
 	}
+
+	// only support "type": "field"
 	if strings.EqualFold(rawRule.Type, "field") {
 		fieldrule, err := parseFieldRule(ctx, msg)
 		if err != nil {
@@ -391,5 +400,6 @@ type RouterRule struct {
 	OutboundTag string `json:"outboundTag"`
 	BalancerTag string `json:"balancerTag"`
 
+	// this DomainMatcher has higher priority than which in "routing".
 	DomainMatcher string `json:"domainMatcher"`
 }

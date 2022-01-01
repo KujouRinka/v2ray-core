@@ -178,6 +178,7 @@ func NewWithContext(ctx context.Context, config *Config) (*Instance, error) {
 	return server, nil
 }
 
+// initInstanceWithConfig loads all config info to V2Ray server object.
 func initInstanceWithConfig(config *Config, server *Instance) (bool, error) {
 	if config.Transport != nil {
 		features.PrintDeprecatedFeatureWarning("global transport settings")
@@ -212,6 +213,7 @@ func initInstanceWithConfig(config *Config, server *Instance) (bool, error) {
 		{stats.ManagerType(), stats.NoopManager{}},
 	}
 
+	// if not config essential features, use default one.
 	for _, f := range essentialFeatures {
 		if server.GetFeature(f.Type) == nil {
 			if err := server.AddFeature(f.Instance); err != nil {
@@ -331,6 +333,7 @@ func (s *Instance) Start() error {
 	defer s.access.Unlock()
 
 	s.running = true
+	// run all features, such as router, dns and so on.
 	for _, f := range s.features {
 		if err := f.Start(); err != nil {
 			return err

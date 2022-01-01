@@ -67,6 +67,7 @@ func RegisterConfigLoader(format *ConfigFormat) error {
 	return nil
 }
 
+// getExtension gets extensions of a file.
 func getExtension(filename string) string {
 	ext := filepath.Ext(filename)
 	return strings.ToLower(ext)
@@ -99,6 +100,7 @@ func GetAllExtensions() []string {
 // * io.Reader that reads a config content (the original way)
 func LoadConfig(formatName string, input interface{}) (*Config, error) {
 	cnt := getInputCount(input)
+	// if no config file provided, using STDIN
 	if cnt == 0 {
 		log.Println("Using config from STDIN")
 		input = os.Stdin
@@ -127,6 +129,7 @@ func LoadConfig(formatName string, input interface{}) (*Config, error) {
 	if !found {
 		return nil, newError("config loader not found: ", formatName).AtWarning()
 	}
+	// Loader is a blackbox for me now.
 	return f.Loader(input)
 }
 
@@ -138,8 +141,9 @@ func loadSingleConfigAutoFormat(input interface{}) (*Config, error) {
 	if file, ok := input.(cmdarg.Arg); ok {
 		extension := getExtension(file.String())
 		if extension != "" {
-			lowerName := strings.ToLower(extension)
-			if f, found := configLoaderByExt[lowerName]; found {
+			// this statement is redundant, for getExtension() has return string by ToLower()
+			// lowerName := strings.ToLower(extension)
+			if f, found := configLoaderByExt[extension]; found {
 				return f.Loader(file)
 			}
 			return nil, newError("config loader not found for: ", extension).AtWarning()

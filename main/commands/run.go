@@ -58,13 +58,14 @@ Use "{{.Exec}} help format-loader" for more information about format.
 }
 
 var (
-	configFiles          cmdarg.Arg
-	configDirs           cmdarg.Arg
-	configFormat         *string
+	configFiles          cmdarg.Arg // config files
+	configDirs           cmdarg.Arg // config files dir
+	configFormat         *string    // config format: json or other
 	configDirRecursively *bool
 )
 
 func setConfigFlags(cmd *base.Command) {
+	// loading config by json or other way
 	configFormat = cmd.Flag.String("format", core.FormatAuto, "")
 	configDirRecursively = cmd.Flag.Bool("r", false, "")
 
@@ -74,6 +75,7 @@ func setConfigFlags(cmd *base.Command) {
 	cmd.Flag.Var(&configDirs, "d", "")
 }
 
+// executeRun loads and parses config file and run v2Ray
 func executeRun(cmd *base.Command, args []string) {
 	setConfigFlags(cmd)
 	cmd.Flag.Parse(args)
@@ -92,6 +94,7 @@ func executeRun(cmd *base.Command, args []string) {
 	// Explicitly triggering GC to remove garbage from config loading.
 	runtime.GC()
 
+	// waiting for SIGINT or SIGTERM to kill v2Ray
 	{
 		osSignals := make(chan os.Signal, 1)
 		signal.Notify(osSignals, os.Interrupt, syscall.SIGTERM)
@@ -202,6 +205,7 @@ func startV2Ray() (core.Server, error) {
 		return nil, err
 	}
 
+	// create a server by success-loaded config.
 	server, err := core.New(config)
 	if err != nil {
 		return nil, newError("failed to create server").Base(err)
