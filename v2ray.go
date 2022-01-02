@@ -94,6 +94,7 @@ type Instance struct {
 	ctx context.Context
 }
 
+// AddInboundHandler add one item of inbound config to server Instance.
 func AddInboundHandler(server *Instance, config *InboundHandlerConfig) error {
 	inboundManager := server.GetFeature(inbound.ManagerType()).(inbound.Manager)
 	rawHandler, err := CreateObject(server, config)
@@ -187,6 +188,7 @@ func initInstanceWithConfig(config *Config, server *Instance) (bool, error) {
 		return true, err
 	}
 
+	// config.App --(one of)--> appSettings --> settings --> obj --> feature --> add to server
 	for _, appSettings := range config.App {
 		settings, err := serial.GetInstanceOf(appSettings)
 		if err != nil {

@@ -42,7 +42,9 @@ func getStatCounter(v *core.Instance, tag string) (stats.Counter, stats.Counter)
 }
 
 type AlwaysOnInboundHandler struct {
-	proxy   proxy.Inbound
+	proxy proxy.Inbound
+	// workers listen conn from browser or other v2ray server and handle it.
+	// the number of workers may equal to port to listen.
 	workers []worker
 	mux     *mux.Server
 	tag     string
@@ -148,6 +150,7 @@ func NewAlwaysOnInboundHandler(ctx context.Context, tag string, receiverConfig *
 }
 
 // Start implements common.Runnable.
+// What is worker should actually do should be run as goroutine.
 func (h *AlwaysOnInboundHandler) Start() error {
 	for _, worker := range h.workers {
 		if err := worker.Start(); err != nil {

@@ -168,6 +168,7 @@ func NewHandler(ctx context.Context, config *core.InboundHandlerConfig) (inbound
 	return nil, newError("unknown allocation strategy: ", receiverSettings.AllocationStrategy.Type).AtError()
 }
 
+// register Inbound Manger and Inbound Handler.
 func init() {
 	common.Must(common.RegisterConfig((*proxyman.InboundConfig)(nil), func(ctx context.Context, config interface{}) (interface{}, error) {
 		return New(ctx, config.(*proxyman.InboundConfig))

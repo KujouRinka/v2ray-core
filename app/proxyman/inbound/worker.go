@@ -54,6 +54,7 @@ func getTProxyType(s *internet.MemoryStreamConfig) internet.SocketConfig_TProxyM
 	return s.SocketSettings.Tproxy
 }
 
+// callback listen from conn and transit it to dispatcher.
 func (w *tcpWorker) callback(conn internet.Connection) {
 	ctx, cancel := context.WithCancel(w.ctx)
 	sid := session.NewID()

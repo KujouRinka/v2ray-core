@@ -195,7 +195,7 @@ func getConfigFilePath() cmdarg.Arg {
 }
 
 func startV2Ray() (core.Server, error) {
-	config, err := core.LoadConfig(*configFormat, configFiles)
+	config, err := core.LoadConfig(*configFormat, configFiles) // just load config to core.Config and do nothing.
 	if err != nil {
 		if len(configFiles) == 0 {
 			err = newError("failed to load config").Base(err)

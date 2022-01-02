@@ -18,6 +18,7 @@ func parseDomainRule(ctx context.Context, domain string) ([]*routercommon.Domain
 	cfgEnv := cfgcommon.GetConfigureLoadingEnvironment(ctx)
 	geoLoader := cfgEnv.GetGeoLoader()
 
+	// handle geosite rule, such as "geosite:cn".
 	if strings.HasPrefix(domain, "geosite:") {
 		list := domain[8:]
 		if len(list) == 0 {
@@ -31,6 +32,7 @@ func parseDomainRule(ctx context.Context, domain string) ([]*routercommon.Domain
 		return domains, nil
 	}
 
+	// handle domain rules from file.
 	isExtDatFile := 0
 	{
 		const prefix = "ext:"

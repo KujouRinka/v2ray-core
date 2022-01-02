@@ -142,6 +142,7 @@ func (r *Route) GetOutboundTag() string {
 }
 
 func init() {
+	// register router config with type.ConfigCreator, in order to convert router config to feature object.
 	common.Must(common.RegisterConfig((*Config)(nil), func(ctx context.Context, config interface{}) (interface{}, error) {
 		r := new(Router)
 		if err := core.RequireFeatures(ctx, func(d dns.Client, ohm outbound.Manager, dispatcher routing.Dispatcher) error {

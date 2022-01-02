@@ -476,6 +476,7 @@ func (c *Config) Build() (*core.Config, error) {
 		config.App = append(config.App, msg...)
 	}
 
+	// append all inbounds to inbound slice.
 	var inbounds []InboundDetourConfig
 
 	if c.InboundConfig != nil {
