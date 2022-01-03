@@ -94,6 +94,7 @@ func (r *Router) pickRouteInternal(ctx routing.Context) (*Rule, routing.Context,
 		ctx = routing_dns.ContextWithDNSClient(ctx, r.dns)
 	}
 
+	// method of AsIs, use linear match.
 	for _, rule := range r.rules {
 		if rule.Apply(ctx) {
 			return rule, ctx, nil

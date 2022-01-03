@@ -280,6 +280,7 @@ func (h *Handler) Process(ctx context.Context, network net.Network, connection i
 	timer := signal.CancelAfterInactivity(ctx, cancel, sessionPolicy.Timeouts.ConnectionIdle)
 
 	ctx = policy.ContextWithBufferPolicy(ctx, sessionPolicy.Buffer)
+	// dispatch dest and get link.
 	link, err := dispatcher.Dispatch(ctx, request.Destination())
 	if err != nil {
 		return newError("failed to dispatch request to ", request.Destination()).Base(err)
@@ -295,6 +296,7 @@ func (h *Handler) Process(ctx context.Context, network net.Network, connection i
 		return nil
 	}
 
+	// register for response.
 	responseDone := func() error {
 		defer timer.SetTimeout(sessionPolicy.Timeouts.UplinkOnly)
 
@@ -307,6 +309,7 @@ func (h *Handler) Process(ctx context.Context, network net.Network, connection i
 		return transferResponse(timer, svrSession, request, response, link.Reader, writer)
 	}
 
+	// register for request.
 	requestDonePost := task.OnSuccess(requestDone, task.Close(link.Writer))
 	if err := task.Run(ctx, requestDonePost, responseDone); err != nil {
 		common.Interrupt(link.Reader)
