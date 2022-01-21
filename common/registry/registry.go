@@ -95,7 +95,7 @@ type registerRequest struct {
 var registerRequests []registerRequest
 
 // RegisterImplementation register an implementation of a type of interface
-// loader(CustomLoader) is a private API, its interface is subject to breaking changes
+// loader(CustomLoader) is a private API, whose interface is subject to breaking changes
 func RegisterImplementation(proto interface{}, loader CustomLoader) error {
 	registerRequests = append(registerRequests, registerRequest{
 		proto:  proto,

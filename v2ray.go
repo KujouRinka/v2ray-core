@@ -32,6 +32,8 @@ type resolution struct {
 	callback interface{}
 }
 
+// getFeature returns feature in slice which has same reflect.Type as given parameter.
+// if no feature matched, return nil.
 func getFeature(allFeatures []features.Feature, t reflect.Type) features.Feature {
 	for _, f := range allFeatures {
 		if reflect.TypeOf(f.Type()) == t {
@@ -41,7 +43,10 @@ func getFeature(allFeatures []features.Feature, t reflect.Type) features.Feature
 	return nil
 }
 
+// resolution.resolve resolves features.Feature passed in and call resolution.callback
+// which return error status and error.
 func (r *resolution) resolve(allFeatures []features.Feature) (bool, error) {
+	// append all features that matched in slice r.deps with type of reflect.Type to fs
 	var fs []features.Feature
 	for _, d := range r.deps {
 		f := getFeature(allFeatures, d)
@@ -53,9 +58,13 @@ func (r *resolution) resolve(allFeatures []features.Feature) (bool, error) {
 
 	callback := reflect.ValueOf(r.callback)
 	var input []reflect.Value
+
+	// callbackType refers to function type
+	// code block below is used to get number and type of function input
+	// parameter and set each of these then append to input slice.
 	callbackType := callback.Type()
 	for i := 0; i < callbackType.NumIn(); i++ {
-		pt := callbackType.In(i)
+		pt := callbackType.In(i) // pt: parameter type
 		for _, f := range fs {
 			if reflect.TypeOf(f).AssignableTo(pt) {
 				input = append(input, reflect.ValueOf(f))
@@ -64,10 +73,12 @@ func (r *resolution) resolve(allFeatures []features.Feature) (bool, error) {
 		}
 	}
 
+	// r.callback expects same feature quantities as its parameter numbers.
 	if len(input) != callbackType.NumIn() {
 		panic("Can't get all input parameters")
 	}
 
+	// code block below is used to catch and parse error for return value.
 	var err error
 	ret := callback.Call(input)
 	errInterface := reflect.TypeOf((*error)(nil)).Elem()
