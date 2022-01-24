@@ -24,6 +24,7 @@ type Server struct {
 // NewServer creates a new mux.Server.
 func NewServer(ctx context.Context) *Server {
 	s := &Server{}
+	// if RequireFeatures meets, callback function set dispatcher
 	core.RequireFeatures(ctx, func(d routing.Dispatcher) {
 		s.dispatcher = d
 	})

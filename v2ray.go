@@ -32,7 +32,8 @@ type resolution struct {
 	callback interface{}
 }
 
-// getFeature returns feature in slice which has same reflect.Type as given parameter.
+// getFeature returns first feature in slice
+// which has same reflect.Type as given parameter.
 // if no feature matched, return nil.
 func getFeature(allFeatures []features.Feature, t reflect.Type) features.Feature {
 	for _, f := range allFeatures {
@@ -61,7 +62,7 @@ func (r *resolution) resolve(allFeatures []features.Feature) (bool, error) {
 
 	// callbackType refers to function type
 	// code block below is used to get number and type of function input
-	// parameter and set each of these then append to input slice.
+	// parameters and set each of these then append to input slice.
 	callbackType := callback.Type()
 	for i := 0; i < callbackType.NumIn(); i++ {
 		pt := callbackType.In(i) // pt: parameter type

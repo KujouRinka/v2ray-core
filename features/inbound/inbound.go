@@ -23,6 +23,7 @@ type Handler interface {
 // Manager is a feature that manages InboundHandlers.
 //
 // v2ray:api:stable
+// for now, there is only one object has implemented this interface.
 type Manager interface {
 	features.Feature
 	// GetHandler returns an InboundHandler for the given tag.

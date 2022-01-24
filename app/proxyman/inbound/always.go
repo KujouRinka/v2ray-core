@@ -60,9 +60,10 @@ func NewAlwaysOnInboundHandler(ctx context.Context, tag string, receiverConfig *
 		return nil, newError("not an inbound proxy.")
 	}
 
+	// dispatcher is registered in this step
 	h := &AlwaysOnInboundHandler{
 		proxy: p,
-		mux:   mux.NewServer(ctx),
+		mux:   mux.NewServer(ctx), // Instance info included in ctx
 		tag:   tag,
 	}
 
@@ -98,7 +99,7 @@ func NewAlwaysOnInboundHandler(ctx context.Context, tag string, receiverConfig *
 				proxy:           p,
 				stream:          mss,
 				tag:             tag,
-				dispatcher:      h.mux,
+				dispatcher:      h.mux, // note !
 				sniffingConfig:  receiverConfig.GetEffectiveSniffingSettings(),
 				uplinkCounter:   uplinkCounter,
 				downlinkCounter: downlinkCounter,
@@ -108,6 +109,7 @@ func NewAlwaysOnInboundHandler(ctx context.Context, tag string, receiverConfig *
 		}
 	}
 	if pr != nil {
+		// specify port to listen, create worker for each one
 		for port := pr.From; port <= pr.To; port++ {
 			if net.HasNetwork(nl, net.Network_TCP) {
 				newError("creating stream worker on ", address, ":", port).AtDebug().WriteToLog()
@@ -163,9 +165,11 @@ func (h *AlwaysOnInboundHandler) Start() error {
 // Close implements common.Closable.
 func (h *AlwaysOnInboundHandler) Close() error {
 	var errs []error
+	// close each worker
 	for _, worker := range h.workers {
 		errs = append(errs, worker.Close())
 	}
+	// close dispatcher
 	errs = append(errs, h.mux.Close())
 	if err := errors.Combine(errs...); err != nil {
 		return newError("failed to close all resources").Base(err)
